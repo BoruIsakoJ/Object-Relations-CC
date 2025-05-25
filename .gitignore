@@ -1,0 +1,11 @@
+# Virtual env metadata
+.venv
+
+
+# pytest cache
+.pytest_cache
+__pycache__
+
+
+*.db
+*/*.db
