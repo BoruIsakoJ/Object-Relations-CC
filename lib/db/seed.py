@@ -1,5 +1,5 @@
 # Seed data for testing
-from connection import get_connection
+from .connection import get_connection
 
 def seed_data():
     conn = get_connection()
@@ -37,7 +37,7 @@ def seed_data():
     
     conn.commit()
     conn.close()
-    print("Seeded database :)")
+    
     
 if __name__ == '__main__':
     seed_data()
