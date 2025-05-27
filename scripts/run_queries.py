@@ -19,9 +19,14 @@ def menu():
     print("5. Update existing author")
     print("6. Delete existing author")
     print("7. List all magazines")
-    print("8. Create new magazine")
-    print("9. List all articles")
-    print("10. Create new article")
+    print("8. Find author by name")
+    print("9. Find author by id")
+    print("10. Create new magazine")
+    print("11. Update existing magazine")
+    print("12. Delete existing magazine")
+    print("13. List all articles")
+    print("14. Create new article")
+    print("15. Delete existing article")
 
 
 def main():
@@ -82,25 +87,58 @@ def main():
             magazines = Magazine.get_all()
             for mag in magazines:
                 print(mag)
-
+                
         elif choice == "8":
+            name = input("Enter the magazine's name: ")
+            magazine = Magazine.find_by_name(name)
+            print(magazine) if magazine else print(
+                f'magazine {name} not found')
+        
+        elif choice == "9":
+            id = int(input("Enter the magazine's id: "))
+            magazine = Magazine.find_by_id(id)
+            print(magazine) if magazine else print(
+                f'Magazine {id} not found')
+
+        elif choice == "10":
             name = input("Enter magazine name: ")
             category = input("Enter magazine category: ")
             try:
-                id_ = int(input("Enter magazine id: "))
-                magazine = Magazine(name, category, id_)
+                magazine = Magazine(name, category)
                 magazine.save()
                 print("Magazine saved!")
             except ValueError:
                 print("ID must be a number.")
                 
+        elif choice == "11":
+            id = int(input("Enter the magazine's id: "))
+            if magazine := Magazine.find_by_id(id):
+                try:
+                    name = input("Enter the magazine's new name: ")
+                    magazine.name = name
+                    category = input("Enter the magazine's new category: ")
+                    magazine.category = category
+                    magazine.update()
+                    print(f"Success: {magazine}")
+                except Exception as exc:
+                    print(f"Error updating magazine: {exc}")
+            else:
+                print(f"Magazine {id} not found")
+                
+        elif choice == "12":
+            id = int(input("Enter the magazine's id: "))
+            if magazine := Magazine.find_by_id(id):
+                magazine.delete()
+                print(f"Magazine {id} deleted")
+            else:
+                print(f"Magazine {id} not found")                
 
-        elif choice == "9":
+        elif choice == "13":
             articles = Article.get_all()
             for article in articles:
                 print(article)
 
-        elif choice == "10":
+        elif choice == "14":
             title = input("Enter article title: ")
             try:
                 magazine_id = int(input("Enter magazine id: "))
@@ -110,6 +148,16 @@ def main():
                 print("Article saved!")
             except ValueError:
                 print("Magazine and Author IDs must be integers.")
+        
+        elif choice == "15":
+            id = int(input("Enter the article's id: "))
+            if article := Article.find_by_id(id):
+                article.delete()
+                print(f"Article {id} deleted")
+            else:
+                print(f"Article {id} not found")   
+        
+        
         else:
             print("Invalid option, try again.")
             
