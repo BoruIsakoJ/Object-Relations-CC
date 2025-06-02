@@ -101,7 +101,7 @@ class Magazine:
         return cls.instance_from_db(row)
     
     def articles(self):
-        from article import Article
+        from .article import Article
         sql = """
             SELECT * FROM articles
             WHERE magazine_id = ?
@@ -110,7 +110,7 @@ class Magazine:
         return [Article.instance_from_db(row) for row in rows]
 
     def contributors(self):
-        from author import Author
+        from .author import Author
         sql = """
             SELECT DISTINCT authors.*
             FROM authors
@@ -129,7 +129,7 @@ class Magazine:
         return [row[0] for row in rows]
 
     def contributing_authors(self):
-        from author import Author
+        from .author import Author
         sql = """
             SELECT authors.*, COUNT(articles.id) as article_count
             FROM authors
@@ -140,3 +140,38 @@ class Magazine:
         """
         rows = cursor.execute(sql, (self.id,)).fetchall()
         return [Author.instance_from_db(row) for row in rows]
+
+    @classmethod
+    def find_by_category(cls, category):
+        from ..db.connection import get_connection
+        conn = get_connection()
+        cursor = conn.execute("SELECT * FROM magazines WHERE category = ?", (category,))
+        row = cursor.fetchone()
+        return cls(**row) if row else None
+
+
+    @classmethod
+    def with_multiple_authors(cls):
+        query = """
+            SELECT m.id, m.name, m.category
+            FROM magazines m
+            JOIN articles a ON a.magazine_id = m.id
+            GROUP BY m.id
+            HAVING COUNT(DISTINCT a.author_id) > 1
+        """
+        rows = conn.execute(query).fetchall()
+        return [cls(id=row["id"], name=row["name"], category=row["category"]) for row in rows]
+
+
+
+    @classmethod
+    def article_counts(cls):
+        query = """
+            SELECT m.id AS id, m.name AS name, COUNT(a.id) AS count
+            FROM magazines m
+            LEFT JOIN articles a ON a.magazine_id = m.id
+            GROUP BY m.id
+        """
+        rows = conn.execute(query).fetchall()
+        return [dict(row) for row in rows]
+
