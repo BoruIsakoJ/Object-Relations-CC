@@ -19,8 +19,8 @@ def menu():
     print("5. Update existing author")
     print("6. Delete existing author")
     print("7. List all magazines")
-    print("8. Find author by name")
-    print("9. Find author by id")
+    print("8. Find magazine by name")
+    print("9. Find magazine by id")
     print("10. Create new magazine")
     print("11. Update existing magazine")
     print("12. Delete existing magazine")
@@ -76,7 +76,7 @@ def main():
                 print(f"Author {id} not found.")
                 
         elif choice == "6":
-            id = int(input("Enter the employee's id: "))
+            id = int(input("Enter the author's id: "))
             if author := Author.find_by_id(id):
                 author.delete()
                 print(f"Author {id} deleted.")
