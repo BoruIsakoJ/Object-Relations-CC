@@ -120,7 +120,7 @@ class Author:
     
     def articles(self):
         """Return list of articles written by the author"""
-        from article import Article
+        from .article import Article
         sql = """
             SELECT * FROM articles
             WHERE author_id = ?
@@ -134,7 +134,7 @@ class Author:
         
     def magazines(self):
         """Return list of unique magazines the author has written articles for"""
-        from magazine import Magazine
+        from .magazine import Magazine
         sql = """
             SELECT DISTINCT magazines.*
             FROM magazines
@@ -148,7 +148,7 @@ class Author:
     def add_article(self, magazine, title):
         """Create and save a new article by the author in the given magazine"""
 
-        from article import Article
+        from .article import Article
         article = Article(title=title, author_id=self.id, magazine_id=magazine.id)
         article.save()
         return article
@@ -164,3 +164,19 @@ class Author:
         """
         cursor.execute(sql, (self.id,))
         return [row[0] for row in cursor.fetchall()]
+
+    @classmethod
+    def top_author(cls):
+        from ..db.connection import get_connection
+        conn = get_connection()
+        query = """
+            SELECT a.author_id, COUNT(*) as count
+            FROM articles a
+            GROUP BY a.author_id
+            ORDER BY count DESC
+            LIMIT 1
+        """
+        top = conn.execute(query).fetchone()
+        if top:
+            return cls.find_by_id(top["author_id"])
+        return None
